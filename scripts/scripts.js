@@ -3,16 +3,19 @@
 const categoryListEle = document.querySelector('#categoryList');
 const chuckQuote = document.querySelector('#chuckQuote');
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log("DOM is ready");
 
     const apiUrl = 'https://api.chucknorris.io/jokes/random?category=dev';
     makeQuote(apiUrl);
 
     const categoriesUrl = 'https://api.chucknorris.io/jokes/categories';
-    get(categoriesUrl).then(function(response) {
-        makeCategoryList(response);
-    });
+    // getWithAwait(categoriesUrl).then(function(response) {
+    //     makeCategoryList(response);
+    // });
+
+    const response = await getWithAwait(categoriesUrl);
+    makeCategoryList(response);
 
     categoryListEle.addEventListener("submit", function(event) {
         event.preventDefault();
@@ -23,19 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-function makeQuote(url) {
-    get(url).then(function(response) {
-        showQuote(response.value, chuckQuote);
-    });
-}
+async function makeQuote(url) {
+    const response = await getWithAwait(url);
+    showQuote(response.value, chuckQuote);
+};
 
 function showQuote(quote, element) {
     element.innerText = quote;
 };
 
 function makeCategoryList(categoryArr) {
-    const filteredArr = categoryArr.filter((cat) => cat !== 'explicit');
+    const filteredArr = categoryArr.filter((cat) => (cat !== 'explicit' && cat !== 'celebrity'));
     const selectEle = document.createElement('select');
+    selectEle.classList.add("select");
     filteredArr.map(function (category) {
         const option = document.createElement('option');
         option.value = category;
